@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SellerAdminPage</title>
+</head>
+<body>
+    <form id="my-form" onSubmit="saveToLocalStorage(event)">
+        <div>
+            <label for="Selling Price:">ProductSelling-Price:</label>
+            <input type="number" id="price" class="price" name="price">
+        </div><br>
+        <div>
+        <label for="Product Name">Product Name:</label>
+        <input type="text" id="product" class="product" name="product">
+        </div><br>
+        <button type="submit">Add Product</button>
+    </form>
+    <h2>Products</h2>
+    <ul id="list"></ul>
+    <h4>Total Value of Products: <span id="totalValue">0.00</span></h4>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function saveToLocalStorage(event){
+            event.preventDefault();
+            const sellingPrice = event.target.price.value;
+            const productName = event.target.product.value;
+            // const sellingPrice = document.getElementById('price').value;
+            // const productName = document.getElementById('product').value;
+            
+
+            const obj={
+                price : sellingPrice,
+                product : productName
+            }
+            axios.post("https://crudcrud.com/api/f3d88803b5e340028a4cb96926a9dd26/productDetails",obj)
+            .then((response) => {
+                localStorage.setItem(obj.product,JSON.stringify(obj));
+                showDetailsOnScreen(response.data);
+                console.log(response);
+            })
+            .catch((error) => {
+                document.body.innerHTML = document.body.innerHTML + '<h4>SomeThing Went Wrong</h4>'
+                console.log(error);
+            })
+            event.target.price.value ='';
+            event.target.product.value = '';    
+        }
+        window.addEventListener("DOMContentLoaded", ()=>{
+           const data = axios.get("https://crudcrud.com/api/f3d88803b5e340028a4cb96926a9dd26/productDetails")
+            .then((response) => {
+                console.log(response);
+                const totalValueElement = document.getElementById("totalValue");
+                let totalValue = 0;
+                for(var i=0;i<response.data.length;i++){
+                    showDetailsOnScreen(response.data[i]);
+
+                    const price = parseFloat(response.data[i].price);
+                    totalValue = totalValue + price;
+                }
+                
+                totalValueElement.textContent = totalValue.toFixed(2);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+            console.log(data);
+        })
+        
+        function showDetailsOnScreen(obj){
+            const parentScreen = document.getElementById('list');
+            const childScreen = document.createElement('li');
+            childScreen.textContent = obj.price + '--' + obj.product;
+
+            ///creating delete button
+            const deleteButton = document.createElement('input');
+            deleteButton.type='button';
+            deleteButton.value="DeleteProduct";
+            deleteButton.onclick = ()=>{
+                axios.delete(`https://crudcrud.com/api/f3d88803b5e340028a4cb96926a9dd26/productDetails/${obj._id}`)
+                .then(() => {
+                    localStorage.removeItem(obj.product);
+                    parentScreen.removeChild(childScreen);
+                    
+                })
+                .catch((error) => {
+                    document.body.innerHTML = document.body.innerHTML + '<h4>SomeThing Went Wrong</h4>'
+                    console.log(error);
+                });
+            }
+
+            // Creating edit button
+            const editButton = document.createElement('input');
+            editButton.type = 'button';
+            editButton.value = "Edit Product";
+            editButton.onclick = () => {
+                document.getElementById('price').value = obj.price;
+                document.getElementById('product').value = obj.product;
+                
+
+                const updateButton = document.createElement('input');
+                updateButton.type = 'button';
+                updateButton.value = 'update Product';
+
+                updateButton.onclick = () =>{
+                    const updatedPrice = document.getElementById('price').value;
+                    const updatedProduct = document.getElementById('product').value;
+
+                    const updatedObj = {
+                        price : updatedPrice,
+                        product : updatedProduct
+                    }
+                    axios.put(`https://crudcrud.com/api/f3d88803b5e340028a4cb96926a9dd26/productDetails/${obj._id}`, updatedObj)
+                        .then(() => {
+                            parentScreen.removeChild(childScreen);
+                            showDetailsOnScreen(updatedObj);
+                            localStorage.setItem(updatedObj.product, JSON.stringify(updatedObj));
+                              
+                        })
+                        .catch((error) => {
+                                console.log(error);
+                        });
+                    };
+
+                    childScreen.replaceChild(updateButton, editButton);
+                };
+
+                childScreen.appendChild(editButton);
+                childScreen.appendChild(deleteButton);
+                parentScreen.appendChild(childScreen);
+            }
+        
+        </script>
+    </body>
+</html>
