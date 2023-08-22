@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activities</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+    <h1>TodoActivity</h1>
+    <form id="my-form" onSubmit="saveToLocalStorage(event)">
+        <div>
+        <label for="TodoName">TodoName:</label>
+        <input type="text" id="name" class="name" name="name" required><br><br>
+        <label for="Description">Description:</label>
+        <input type="text" id="description" class="description" name="description" required><br><br>
+        </div>
+        <button type="submit">Add Item</button>
+    </form>
+    <h2>TodoList:</h2>
+    <ul id="list"></ul>
+    <h2>Done List:</h2>
+    <ul id="done-list"></ul>
+    <h2>Remaining List:</h2>
+    <ul id="remaining-list"></ul>
+    </header>
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function saveToLocalStorage(event){
+            event.preventDefault();
+            const name = event.target.name.value;
+            const description = event.target.description.value;
+        
+            const activity={
+                name : name,
+                description : description,
+                
+            }
+            axios.post("http://localhost:3000/activity/add-activity",activity)
+            .then((response) => {
+                console.log(response);
+                showDetailsOnScreen(response.data.newActivityDetails);
+                //showDetailsOnScreen(response.data)
+                
+            })
+            .catch(err=>{
+                document.body.innerHTML = document.body.innerHTML + "<h4><strong>SomeThing Went Wrong</strong></h4>"
+                console.log(err);
+            })
+            event.target.name.value = ''; 
+            event.target.description.value ='';
+               
+        }
+        window.addEventListener("DOMContentLoaded", ()=>{
+           const data = axios.get("http://localhost:3000/activity/get-activity")
+            .then((response) => {
+                console.log(response);
+                for(var i=0;i<response.data.allActivities.length;i++){
+                    showDetailsOnScreen(response.data.allActivities[i]);
+                }
+                
+                
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+            console.log(data);
+        })
+        function showDetailsOnScreen(activity){
+            const parentElement = document.getElementById('list');
+            const childElement = document.createElement('li');
+            childElement.textContent = activity.name + '--' + activity.description;
+            childElement.id = activity.id;
+
+            ///creating correct button
+            const correctButton = document.createElement('input');
+            correctButton.type='button';
+            correctButton.value="\u2713";
+            correctButton.id='correct';
+            correctButton.onclick = ()=>{
+                updateActivityStatus(activity.id, 'done');
+            };
+            // Creating wrong button
+            const wrongButton = document.createElement('input');
+            wrongButton.type = 'button';
+            wrongButton.value = "X";
+            wrongButton.onclick = () => {
+                updateActivityStatus(activity.id, 'remaining');
+            };
+            childElement.appendChild(correctButton);
+            childElement.appendChild(wrongButton);
+            parentElement.appendChild(childElement);
+                
+        }
+        function updateActivityStatus(activityId, status) {
+            axios.put("http://localhost:3000/activity/status-activity/"+ activityId, { status: status })
+                .then((response) => {
+                    console.log(response.data.updatedActivity);
+                    const activity = response.data.updatedActivity;
+                    const activityElement = document.getElementById(activityId);
+                    if (status === 'done') {
+                        const doneList = document.getElementById('done-list');
+                        const clonedActivityElement = document.createElement('li');
+                        clonedActivityElement.textContent = activity.name + '--' + activity.description;
+                        doneList.appendChild(clonedActivityElement);
+                        activityElement.remove(); 
+                    } else if (status === 'remaining') {
+                        const remainingList = document.getElementById('remaining-list');
+                        const remainingActivityElement = document.createElement('li');
+                        remainingActivityElement.textContent = activity.name + '--' + activity.description;
+                        remainingList.appendChild(remainingActivityElement);
+                        activityElement.remove();
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        }
+        </script>
+    </body>
+</html> 
