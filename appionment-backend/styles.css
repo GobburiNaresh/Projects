@@ -1,0 +1,87 @@
+/* Apply styles to the header */
+header {
+    background-color: #22c43d;
+    color: white;
+    text-align: center;
+    padding: 10px;
+  }
+  
+  /* Style the form container */
+  .container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Style form labels */
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  /* Style text and tel input fields */
+  input[type="text"],
+  input[type="tel"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+  }
+  
+  /* Style buttons */
+  button[type="submit"]{
+    background-color: #e08383;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    color: white;
+  }
+  input#edit[type="button"] {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: #0fac1f;
+    color: white;
+  }
+
+  input#delete[type="button"] {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: #f60f13;
+    color: white;
+  }
+  input#save[type="button"] {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: #0d2ae7;
+    color: white;
+  }
+  #listOfItems {
+    list-style: none;
+    padding: 0;
+  }
+  
+  #listOfItems li {
+    font-weight: bold;
+    font-style: italic;
+    background-color: #f5f5f5;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
