@@ -1,0 +1,111 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+header {
+    background-color: #35424a;
+    color: white;
+    text-align: center;
+    padding: 1em;
+}
+
+h1 {
+    margin: 0;
+}
+
+form {
+    text-align: center;
+    margin-top: 1em;
+}
+
+form label {
+    display: block;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+}
+
+form input {
+    width: 50%;
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
+
+form button {
+    background-color: #35424a;
+    color: rgb(240, 117, 9);
+    padding: 0.5em 1em;
+    border: solid;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    text-align: center; 
+}
+
+ul li {
+    background-color: #92b8d7;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    font-style: italic;
+    text-align: center;
+    width: 50%;
+}
+
+ul li span {
+    flex: 1;
+    text-align: left;
+    margin-right: 10px;
+}
+
+ul li .button-container {
+    display: flex;
+    align-items: center;
+}
+
+ul li input[type="button"] {
+    border: none;
+    padding: 0.25em 0.5em;
+    cursor: pointer;
+}
+
+ul li input[value="DeleteProduct"] {
+    background-color: #a90707;
+    color: white;
+    
+}
+
+ul li input[value="EditProduct"] {
+    background-color: #0cf81c;
+    color: white;
+    
+}
+
+ul li input[value="updateProduct"] {
+    background-color: #4608e3;
+    color: white;
+    
+}
+
+#totalValue {
+    color: #d9534f;
+}
+
+#list {
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
