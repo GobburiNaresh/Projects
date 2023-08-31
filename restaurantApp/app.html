@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant app</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Restaurant app</h1>
+    </header>
+    <form id="my-form" onSubmit="addOrderToServer(event)">
+        <div id="expense">
+            <label for="ChooseAmount">Choose-Amount:</label>
+            <input type="number" id="amount" class="amount" name="amount"><br>
+            <label for="ChooseDish">Choose-Dish:</label>
+            <input type="text" id="dish" class="dish" name="dish"><br>
+            <label for="tableSelect">Choose a Table:</label>
+            <select id="table" name="table">
+                <option value="table_1">Table-1</option>
+                <option value="table_2">Table-2</option>
+                <option value="table_3">Table-3</option>
+                <option value="table_4">Table-4</option>
+                <option value="table_5">Table-5</option>
+                <option value="table_6">Table-6</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Add To Bill</button>
+        </div>
+    </form>
+    <div id="table">
+        <h2>Table-1:</h2>
+        <ul id="table_1"></ul>
+        <h2>Table-2:</h2>
+        <ul id="table_2"></ul>
+        <h2>Table-3:</h2>
+        <ul id="table_3"></ul>
+        <h2>Table-4:</h2>
+        <ul id="table_4"></ul>
+        <h2>Table-5:</h2>
+        <ul id="table_5"></ul>
+        <h2>Table-6:</h2>
+        <ul id="table_6"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function addOrderToServer(event) {
+            event.preventDefault();
+            const amount = event.target.amount.value;
+            const dish = event.target.dish.value;
+            const table_number = event.target.table.value;
+
+            const order = {
+                amount: amount,
+                dish: dish,
+                table_number: table_number
+            };
+
+            axios.post("http://localhost:3000/order/add-order", order)
+            .then((response) => {
+                console.log(response);
+                orderDetails(response.data.newOrderDetails);
+                
+            })
+            .catch((error) => {
+                document.body.innerHTML = document.body.innerHTML + '<h4>SomeThing Went Wrong</h4>';
+                console.log(error);
+            });
+
+            event.target.amount.value = '';
+            event.target.dish.value = '';
+            // event.target.elements.table.value='';
+            
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            axios.get("http://localhost:3000/order/get-order")
+            .then((response) => {
+                console.log(response);
+                for (let i = 0; i < response.data.allOrders.length; i++) {
+                    orderDetails(response.data.allOrders[i]);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        });
+
+        function orderDetails(order) {
+            const tableId = order.table_number;
+            //console.log(tableId);
+            const details = document.getElementById(tableId);
+            const list = document.createElement('li');
+            list.textContent = order.amount + '--' + order.dish + '--' +order.table_number ;
+
+            const deleteOrder = document.createElement('input');
+            deleteOrder.type = 'button';
+            deleteOrder.value = 'Delete Order';
+            
+            deleteOrder.onclick = () => {
+                axios.delete(`http://localhost:3000/order/delete-order/${order.id}`)
+                .then(() => {
+                    details.removeChild(list);
+                })
+                .catch((error) => {
+                    document.body.innerHTML = document.body.innerHTML + '<h4>SomeThing Went Wrong</h4>';
+                    console.log(error);
+                });
+            };
+            list.appendChild(deleteOrder);
+            details.appendChild(list);
+        }
+    </script>
+</body>
+</html>
